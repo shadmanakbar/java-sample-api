@@ -1,138 +1,89 @@
-# java-sample-api
+# 🚀 Automated k6 Performance Testing (Official MCP)
 
-> 🚀 A sample **Spring Boot 3 REST API** designed to demonstrate automated k6 performance testing via GitHub Actions.
+[![GitHub License](https://img.shields.io/github/license/shadmanakbar/k6-auto-pr-performance-tests)](https://github.com/shadmanakbar/k6-auto-pr-performance-tests/blob/main/LICENSE)
+[![k6](https://img.shields.io/badge/k6-Official-blueviolet)](https://k6.io)
+[![MCP](https://img.shields.io/badge/MCP-Standard-blue)](https://modelcontextprotocol.io)
 
-This repo is the companion to the [k6-auto-performance-testing](https://github.com/shadman-k6-mcp/k6-auto-pr-performance-tests) workflow. Every pull request is automatically load-tested with k6, and results are posted as a PR comment.
-
----
-
-## API Endpoints
-
-### Products
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/products` | List all products (optional `?category=` or `?search=`) |
-| `GET` | `/api/products/{id}` | Get product by ID |
-| `POST` | `/api/products` | Create a new product |
-| `PUT` | `/api/products/{id}` | Update a product |
-| `DELETE` | `/api/products/{id}` | Delete a product |
-
-### Users
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/users` | List all users (optional `?role=`) |
-| `GET` | `/api/users/{id}` | Get user by ID |
-| `POST` | `/api/users` | Create a new user |
-| `PUT` | `/api/users/{id}` | Update a user |
-| `DELETE` | `/api/users/{id}` | Delete a user |
-
-### Health & Monitoring
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/` | Root endpoint — always 200 |
-| `GET` | `/health` | Simple health check |
-| `GET` | `/actuator/health` | Spring Boot Actuator health (detailed) |
-| `GET` | `/actuator/metrics` | Metrics |
-| `GET` | `/h2-console` | H2 database console (dev only) |
+This repository provides a **professional, AI-driven performance testing solution** for GitHub Pull Requests. It leverages the **Official [Grafana mcp-k6 server](https://github.com/grafana/mcp-k6)** and the **Model Context Protocol (MCP)** to bring "Pure MCP" automation to your CI/CD pipeline.
 
 ---
 
-## Running Locally
+## 🎨 Pure MCP Architecture
+This solution is designed for **Zero-Maintenance**. It eliminates complex custom orchestrators by using a lightweight **MCP Agent** bridge and the official Grafana tooling.
 
-### Prerequisites
-- Java 17+
-- Maven 3.8+
+1.  **🔍 Smart Detection**: Automatically identifies your tech stack (Node, Java, Go, Python, Ruby).
+2.  **🏗️ Auto-Build & Start**: Builds and backgrounds your application on port `8080`.
+3.  **🤖 AI Brain (Multi-LLM)**: Handshakes with an LLM of your choice (Ollama, OpenAI, Anthropic) to generate k6 scripts.
+4.  **🛡️ Security Sandbox**: Validates and executes scripts via the official `mcp-k6` server with strict pattern blocking and URL whitelisting.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/java-sample-api.git
-cd java-sample-api
-mvn spring-boot:run
-```
+---
 
-The app starts on **port 8080** with an in-memory H2 database seeded with 8 products and 5 users.
+## 🏁 How It Works
 
-### Sample requests
-
-```bash
-# List all products
-curl http://localhost:8080/api/products
-
-# Get product by ID
-curl http://localhost:8080/api/products/1
-
-# Create a product
-curl -X POST http://localhost:8080/api/products \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test Widget","description":"A test product","price":29.99,"stock":100,"category":"electronics"}'
-
-# Filter by category
-curl "http://localhost:8080/api/products?category=electronics"
-
-# Create a user
-curl -X POST http://localhost:8080/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Jane Doe","email":"jane@example.com","phone":"+1-555-0100","role":"user"}'
-
-# Health check
-curl http://localhost:8080/actuator/health
+```mermaid
+graph TD
+    A[PR Push/Open] --> B[Detect Stack & Build]
+    B --> C[Start App & Health Check]
+    C --> D[Initialize MCP Agent]
+    
+    subgraph "AI Tooling Layer"
+    D <--> E((LLM Provider))
+    D <--> F[Official mcp-k6 Server]
+    end
+    
+    F --> G[k6 High-Performance Run]
+    G --> H[LLM Result Analysis]
+    H --> I[Post PR Summary Comment]
 ```
 
 ---
 
-## k6 Performance Testing
+## 🧠 Multi-LLM Support
 
-### Pre-written k6 script: `tests/k6/performance-test.js`
+Choose your intelligence level. The system defaults to **local Ollama** for 100% cost-free and private testing, but supports premium models via GitHub Secrets:
 
-A comprehensive k6 test is already committed. It covers:
-- ✅ Health endpoints (`/`, `/health`, `/actuator/health`)
-- ✅ `GET /api/products` — list & filter
-- ✅ `GET /api/products/{id}` — read random seeded product
-- ✅ `POST /api/products` — create with random data
-- ✅ `GET /api/users` — list all
-- ✅ `GET /api/users/{id}` — read random seeded user
-- ✅ `POST /api/users` — create with random email (avoids 409)
+| Provider | Default Model | Configuration | Cost |
+|----------|---------------|---------------|------|
+| **Ollama** | `llama3` | Default (Local) | **$0** (Free) |
+| **OpenAI** | `gpt-4o` | `LLM_PROVIDER: openai` | Token Based |
+| **Anthropic** | `claude-3-5-sonnet` | `LLM_PROVIDER: anthropic` | Token Based |
 
-**Thresholds:**
-- P95 response time < 500ms
-- Error rate < 1%
+---
 
-### Run locally
+## 🚀 Quick Setup
 
-```bash
-# Install k6: https://k6.io/docs/getting-started/installation/
-k6 run tests/k6/performance-test.js
+### 1. Copy Files to Your Repo
+Drop these files into your repository at the exact paths:
+```text
+your-repo/
+├── .github/workflows/k6-performance-test.yml
+├── scripts/
+│   ├── mcp_agent.py
+│   └── start.sh
+└── .env.example
 ```
 
----
+### 2. Configure Startup
+Edit `scripts/start.sh` and uncomment the block matching your technology stack. Ensure your app listens on **port 8080**.
 
-## GitHub Actions Setup
-
-The workflow in `.github/workflows/k6-performance-test.yml` runs automatically on every PR.
-
-### Required secret
-
-| Secret | Where to get it |
-|--------|-----------------|
-| `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) — free, used only if no k6 script exists |
-
-Add it at: **Settings → Secrets and variables → Actions → New repository secret**
-
-> Since `tests/k6/performance-test.js` already exists in this repo, **Groq is never called** — the existing script is reused on every PR.
+### 3. Set GitHub Secrets (Optional)
+If using cloud LLMs, add your `LLM_API_KEY` to **Settings → Secrets and variables → Actions**.
 
 ---
 
-## Tech Stack
+## 🛡️ Security & Privacy
+The solution is built with a **Security-First** mindset:
+*   **Execution Guard**: The `mcp-k6` server blocks dangerous patterns like `child_process`, `eval`, and filesystem access.
+*   **Whitelisting**: The MCP Agent strictly enforces that k6 scripts ONLY target `http://localhost:8080`.
+*   **In-Process Handshakes**: Communication between the agent and the server happens over standard `stdio`, never exposing tokens to the network.
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Spring Boot 3.2 |
-| Language | Java 17 |
-| Database | H2 (in-memory, auto-seeded) |
-| Build | Maven |
-| Persistence | Spring Data JPA / Hibernate |
-| Monitoring | Spring Boot Actuator |
-| Performance Testing | k6 |
-| CI | GitHub Actions |
+---
+
+## 📂 Project Structure
+*   `.github/workflows/`: The GitHub Action automation.
+*   `scripts/mcp_agent.py`: The "Pure MCP" bridge (Dependency-free Python).
+*   `scripts/start.sh`: Standardized app startup script.
+*   `.env.example`: Template for LLM configuration.
+
+---
+*Powered by [Grafana k6](https://k6.io) and [Model Context Protocol](https://modelcontextprotocol.io)*
